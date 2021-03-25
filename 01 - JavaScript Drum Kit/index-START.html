@@ -59,7 +59,7 @@
 
 <script>
   let keyNumList = [];
-  // Add data attribute for each key to keyNumList
+  // Add value of data-key attribute for each key to keyNumList
   // Purpose is to later exclude irrelevant keypresses from event handling
   document.querySelectorAll('div.key').forEach(key => {
     keyNumList.push(parseInt(key.getAttribute('data-key')));
@@ -71,15 +71,17 @@
       makeGlowEffect(e.keyCode);
     }
   });
-
+  
   window.addEventListener('keyup', e => {
     if (keyNumList.includes(e.keyCode)) {
       removeGlowEffect(e.keyCode);
     }
   });
-
+  
   const makeAudioPlay = (keyCode) => {
     let audio = document.querySelector(`audio[data-key="${keyCode}"]`);
+    // Restart audio track from beginning (so that silence at end of track is not played)
+    audio.currentTime = 0;
     audio.play();
   };
 
