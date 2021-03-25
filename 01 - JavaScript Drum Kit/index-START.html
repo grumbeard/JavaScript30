@@ -58,41 +58,42 @@
   <audio data-key="76" src="sounds/tink.wav"></audio>
 
 <script>
+  
   let keyNumList = [];
   // Add value of data-key attribute for each key to keyNumList
   // Purpose is to later exclude irrelevant keypresses from event handling
   document.querySelectorAll('div.key').forEach(key => {
     keyNumList.push(parseInt(key.getAttribute('data-key')));
+    
+    // Add listener for Transition End
+    // Purpose is to allow app to automatically remove glow effect at end of transition
+    key.addEventListener('transitionend', removeGlowEffect);
   });
-
+  
   window.addEventListener('keydown', e => {
     if (keyNumList.includes(e.keyCode)) {
-      makeAudioPlay(e.keyCode);
-      makeGlowEffect(e.keyCode);
+      makeAudioPlay(e);
+      makeGlowEffect(e);
     }
   });
-  
-  window.addEventListener('keyup', e => {
-    if (keyNumList.includes(e.keyCode)) {
-      removeGlowEffect(e.keyCode);
-    }
-  });
-  
-  const makeAudioPlay = (keyCode) => {
-    let audio = document.querySelector(`audio[data-key="${keyCode}"]`);
+
+  function makeAudioPlay(e) {
+    let audio = document.querySelector(`audio[data-key="${e.keyCode}"]`);
     // Restart audio track from beginning (so that silence at end of track is not played)
     audio.currentTime = 0;
     audio.play();
   };
-
-  const makeGlowEffect = (keyCode) => {
-    let key = document.querySelector(`div.key[data-key="${keyCode}"]`);
-    key.classList.toggle('playing');
+  
+  function makeGlowEffect(e) {
+    let key = document.querySelector(`div.key[data-key="${e.keyCode}"]`);
+    key.classList.add('playing');
   }
-
-  const removeGlowEffect = (keyCode) => {
-    let key = document.querySelector(`div.key[data-key="${keyCode}"]`);
-    key.classList.toggle('playing');
+  
+  function removeGlowEffect(e) {
+    // Ignore the shorter transitions ('transform' is the longest)
+    if (e.propertyName !== 'transform') return;
+    let key = e.target;
+    key.classList.remove('playing');
   }
 </script>
 
